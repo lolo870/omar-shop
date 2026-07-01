@@ -757,6 +757,7 @@ padding:10px 20px;
     <div class="ai-input">
         <input type="text" id="ai-question" placeholder="اسأل عن أي منتج...">
         <button id="ai-send">إرسال</button>
+        <button id="ai-mic">🎤</button>
     </div>
 </div>
 <!-- ======= JavaScript ======= -->
@@ -991,6 +992,7 @@ updateCartUI();
     const toggle  = document.getElementById("ai-chat-toggle");
     const closeBtn = document.getElementById("ai-close");
     const sendBtn = document.getElementById("ai-send");
+    const micBtn = document.getElementById("ai-mic");
     const input   = document.getElementById("ai-question");
     const messages = document.getElementById("ai-messages");
     
@@ -1000,6 +1002,20 @@ updateCartUI();
     closeBtn.onclick = () => chatBox.style.display = "none";
     
     sendBtn.onclick = sendMessage;
+    const recognition = new webkitSpeechRecognition();
+
+recognition.lang = "ar-EG";
+recognition.continuous = false;
+recognition.interimResults = false;
+
+micBtn.onclick = () => {
+    recognition.start();
+};
+
+recognition.onresult = (e) => {
+    input.value = e.results[0][0].transcript;
+    sendMessage();
+};
     input.addEventListener("keypress", e => {
         if (e.key === "Enter") sendMessage();
     });
@@ -1144,6 +1160,7 @@ if (cmd && cmd.action === "add_to_cart") {
 
 } else {
     messages.innerHTML += `<div class="bot-msg">${answer}</div>`;
+    speak(answer);
 }
     
         } catch (err) {
@@ -1151,7 +1168,17 @@ if (cmd && cmd.action === "add_to_cart") {
             messages.innerHTML += `<div style="color:red">خطأ في AI</div>`;
         }
     }
-    
+    function speak(text) {
+    speechSynthesis.cancel(); // يوقف أي كلام شغال
+
+    const utter = new SpeechSynthesisUtterance(text);
+
+    utter.lang = "ar-EG";
+    utter.rate = 1;
+    utter.pitch = 1;
+
+    speechSynthesis.speak(utter);
+}
     // ── INIT ─────────────────────────────────
     loadProducts();
     updateCartUI();
