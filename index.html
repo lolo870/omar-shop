@@ -1168,14 +1168,19 @@ if (cmd && cmd.action === "add_to_cart") {
             messages.innerHTML += `<div style="color:red">خطأ في AI</div>`;
         }
     }
-    function speak(text) {
-    speechSynthesis.cancel(); // يوقف أي كلام شغال
+   function speak(text) {
+    if (!("speechSynthesis" in window)) return;
+
+    speechSynthesis.cancel();
 
     const utter = new SpeechSynthesisUtterance(text);
-
-    utter.lang = "ar-EG";
+    utter.lang = "ar-SA"; // أو ar-EG إذا لم تعمل جرب ar-SA
+    utter.volume = 1;
     utter.rate = 1;
     utter.pitch = 1;
+
+    // مهم جدًا للموبايل
+    window.speechSynthesis.resume();
 
     speechSynthesis.speak(utter);
 }
