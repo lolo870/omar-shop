@@ -986,7 +986,7 @@ updateCartUI();
     // 🤖 AI IMPROVED ONLY (FIXED)
     // ──────────────────────────────────────────
     
-    const GEMINI_API_KEY = "AQ.Ab8RN6JgJq4zLr8PQe9c56lWaYNa7S5C_xv3wTWLu2gIeqI7Cg";
+    const GEMINI_API_KEY = "AQ.Ab8RN6Kmd2K2jAfMJ778yG2XmRQnalwG99inNU-UnRkWEGHFcQ";
     
     const chatBox = document.getElementById("ai-chat-box");
     const toggle  = document.getElementById("ai-chat-toggle");
@@ -1002,7 +1002,27 @@ updateCartUI();
     closeBtn.onclick = () => chatBox.style.display = "none";
     
     sendBtn.onclick = sendMessage;
-    const recognition = new webkitSpeechRecognition();
+    const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+
+    recognition.lang = "ar-EG";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    micBtn.onclick = () => recognition.start();
+
+    recognition.onresult = (e) => {
+        input.value = e.results[0][0].transcript;
+        sendMessage();
+    };
+} else {
+    micBtn.style.display = "none";
+}
 
 recognition.lang = "ar-EG";
 recognition.continuous = false;
@@ -1168,7 +1188,7 @@ if (cmd && cmd.action === "add_to_cart") {
             messages.innerHTML += `<div style="color:red">خطأ في AI</div>`;
         }
     }
-   function speak(text) {
+    function speak(text) {
     if (!("speechSynthesis" in window)) return;
 
     speechSynthesis.cancel();
